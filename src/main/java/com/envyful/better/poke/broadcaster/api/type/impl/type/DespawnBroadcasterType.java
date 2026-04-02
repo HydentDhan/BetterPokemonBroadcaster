@@ -55,7 +55,6 @@ public class DespawnBroadcasterType extends AbstractBroadcasterType<EntityLeaveL
             return false;
         }
 
-        // THE HARDCODED BOSS BLOCK
         if (pixelmon.isBossPokemon()) {
             return false;
         }
@@ -98,7 +97,7 @@ public class DespawnBroadcasterType extends AbstractBroadcasterType<EntityLeaveL
                         .replace("%z%", pixelmon.getBlockZ() + "")
                         .replace("%world%", UtilWorld.getName(pixelmon.level()) + "")
                         .replace("%pokemon%", pixelmon.getPokemonName())
-                        .replace("%pokemon_lower%", pixelmon.getPokemonName().toLowerCase().replace(" ", "")) // New Discord Tag
+                        .replace("%pokemon_lower%", pixelmon.getPokemonName().toLowerCase().replace(" ", ""))
                         .replace("%biome%", BiomeHelper.getLocalizedBiomeName(pixelmon.level().getBiome(pixelmon.blockPosition())).getString())));
     }
 

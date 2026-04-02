@@ -50,7 +50,7 @@ public class CaptureBroadcasterType extends AbstractBroadcasterType<CaptureEvent
                         .replace("%z%", z + "")
                         .replace("%world%", worldName + "")
                         .replace("%pokemon%", pokemon.getSpecies().getName())
-                        .replace("%pokemon_lower%", pokemon.getSpecies().getName().toLowerCase().replace(" ", "")) // New Discord Tag
+                        .replace("%pokemon_lower%", pokemon.getSpecies().getName().toLowerCase().replace(" ", ""))
                         .replace("%biome%", biomeName)));
     }
 

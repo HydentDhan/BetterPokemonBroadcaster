@@ -33,7 +33,7 @@ public class DefeatBroadcasterType extends AbstractBroadcasterType<BattleEndEven
             return false;
         }
 
-        // THE HARDCODED BOSS BLOCK
+
         if (entity.isBossPokemon()) {
             return false;
         }
@@ -88,7 +88,7 @@ public class DefeatBroadcasterType extends AbstractBroadcasterType<BattleEndEven
                         .replace("%z%", pixelmon.getBlockZ() + "")
                         .replace("%world%", UtilWorld.getName(pixelmon.level()) + "")
                         .replace("%pokemon%", pixelmon.getPokemonName())
-                        .replace("%pokemon_lower%", pixelmon.getPokemonName().toLowerCase().replace(" ", "")) // New Discord Tag
+                        .replace("%pokemon_lower%", pixelmon.getPokemonName().toLowerCase().replace(" ", ""))
                         .replace("%biome%", BiomeHelper.getLocalizedBiomeName(pixelmon.level().getBiome(pixelmon.blockPosition())).getString())));
     }
 
