@@ -19,6 +19,10 @@ public class CaptureBroadcasterType extends AbstractBroadcasterType<CaptureEvent
 
     @Override
     protected boolean isEvent(CaptureEvent.SuccessfulCapture event) {
+        if (event instanceof CaptureEvent.SuccessfulRaidCapture) {
+            return false;
+        }
+
         return true;
     }
 

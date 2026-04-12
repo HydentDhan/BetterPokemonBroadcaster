@@ -27,7 +27,23 @@ public class BroadcasterUtil {
                     pokemon = ((CaptureEvent.SuccessfulCapture) event).getPokemon();
                 }
 
-                if (pokemon == null || !option.getSpec().matches(pokemon)) continue;
+                if (pokemon == null) continue;
+
+                boolean matches = (pixelmon != null) ? option.getSpec().matches(pixelmon) : option.getSpec().matches(pokemon);
+                if (!matches) continue;
+
+
+                if (pixelmon != null && pixelmon.isBossPokemon()) {
+                    boolean isBossBroadcast = false;
+                    for (String line : option.getBroadcasts()) {
+                        if (line.toLowerCase().contains("boss")) {
+                            isBossBroadcast = true;
+                            break;
+                        }
+                    }
+                    if (!isBossBroadcast) continue;
+                }
+
 
                 var nearestPlayer = broadcasterType.getNearestPlayer(event, pixelmon, option.getNearestPlayerRadius());
                 if (nearestPlayer == null && option.isNearestPlayerOnly()) continue;

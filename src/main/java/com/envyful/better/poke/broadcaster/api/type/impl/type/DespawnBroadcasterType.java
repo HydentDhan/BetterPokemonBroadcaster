@@ -23,11 +23,14 @@ import java.util.UUID;
 
 public class DespawnBroadcasterType extends AbstractBroadcasterType<EntityLeaveLevelEvent> {
 
+    
     private static final Set<UUID> CAPTURED_UUIDS = Collections.newSetFromMap(new LinkedHashMap<UUID, Boolean>() {
-        @Override
-        protected boolean removeEldestEntry(Map.Entry<UUID, Boolean> eldest) {
-            return size() > 100;
-        }
+        @Override protected boolean removeEldestEntry(Map.Entry<UUID, Boolean> eldest) { return size() > 100; }
+    });
+
+
+    private static final Set<UUID> DESPAWNED_UUIDS = Collections.newSetFromMap(new LinkedHashMap<UUID, Boolean>() {
+        @Override protected boolean removeEldestEntry(Map.Entry<UUID, Boolean> eldest) { return size() > 500; }
     });
 
     public DespawnBroadcasterType() {
@@ -37,56 +40,38 @@ public class DespawnBroadcasterType extends AbstractBroadcasterType<EntityLeaveL
 
     @SubscribeEvent
     public void onCaptureStart(CaptureEvent.StartCapture event) {
-        if (event.getPokemon() != null) {
-            CAPTURED_UUIDS.add(event.getPokemon().getUUID());
-        }
+        if (event.getPokemon() != null) CAPTURED_UUIDS.add(event.getPokemon().getUUID());
     }
 
     @SubscribeEvent
     public void onCaptureFail(CaptureEvent.FailedCapture event) {
-        if (event.getPokemon() != null) {
-            CAPTURED_UUIDS.remove(event.getPokemon().getUUID());
-        }
+        if (event.getPokemon() != null) CAPTURED_UUIDS.remove(event.getPokemon().getUUID());
     }
 
     @Override
     protected boolean isEvent(EntityLeaveLevelEvent event) {
-        if (!(event.getEntity() instanceof PixelmonEntity pixelmon)) {
+        if (!(event.getEntity() instanceof PixelmonEntity pixelmon)) return false;
+
+        if (pixelmon.isRaidPokemon()) return false;
+
+        if (pixelmon.tickCount < 100) return false;
+        if (pixelmon.getOwnerUUID() != null || pixelmon.getPokemon().getOwnerPlayerUUID() != null) return false;
+        if (CAPTURED_UUIDS.contains(pixelmon.getPokemon().getUUID())) return false;
+        if (pixelmon.getHealth() <= 0.0F) return false;
+        if (com.pixelmonmod.pixelmon.battles.BattleRegistry.getBattle(pixelmon) != null) return false;
+
+        if (DESPAWNED_UUIDS.contains(pixelmon.getUUID())) return false;
+
+        if (event.getEntity().getRemovalReason() != Entity.RemovalReason.DISCARDED) {
             return false;
         }
 
-        if (pixelmon.isBossPokemon()) {
-            return false;
-        }
-
-        if (pixelmon.tickCount < 100) {
-            return false;
-        }
-
-        if (pixelmon.getOwnerUUID() != null || pixelmon.getPokemon().getOwnerPlayerUUID() != null) {
-            return false;
-        }
-
-        if (CAPTURED_UUIDS.contains(pixelmon.getPokemon().getUUID())) {
-            return false;
-        }
-
-        if (pixelmon.getHealth() <= 0.0F) {
-            return false;
-        }
-
-        if (com.pixelmonmod.pixelmon.battles.BattleRegistry.getBattle(pixelmon) != null) {
-            return false;
-        }
-
-        return event.getEntity().getRemovalReason() == Entity.RemovalReason.DISCARDED ||
-                event.getEntity().getRemovalReason() == Entity.RemovalReason.UNLOADED_TO_CHUNK;
+        DESPAWNED_UUIDS.add(pixelmon.getUUID());
+        return true;
     }
 
     @Override
-    protected PixelmonEntity getEntity(EntityLeaveLevelEvent event) {
-        return (PixelmonEntity) event.getEntity();
-    }
+    protected PixelmonEntity getEntity(EntityLeaveLevelEvent event) { return (PixelmonEntity) event.getEntity(); }
 
     @Override
     protected Placeholder asEventPlaceholder(EntityLeaveLevelEvent event, PixelmonEntity pixelmon, ServerPlayer nearestPlayer) {
@@ -107,7 +92,5 @@ public class DespawnBroadcasterType extends AbstractBroadcasterType<EntityLeaveL
     }
 
     @SubscribeEvent
-    public void onEntityLeave(EntityLeaveLevelEvent event) {
-        BroadcasterUtil.handleEvent(event);
-    }
+    public void onEntityLeave(EntityLeaveLevelEvent event) { BroadcasterUtil.handleEvent(event); }
 }

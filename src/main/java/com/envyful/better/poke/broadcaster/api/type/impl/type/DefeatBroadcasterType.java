@@ -33,6 +33,9 @@ public class DefeatBroadcasterType extends AbstractBroadcasterType<BattleEndEven
             return false;
         }
 
+        if (entity.isBossPokemon() || entity.isRaidPokemon()) {
+            return false;
+        }
 
         if (entity.isBossPokemon()) {
             return false;

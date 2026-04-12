@@ -31,7 +31,8 @@ public class SpawnBroadcasterType extends AbstractBroadcasterType<SpawnEvent> {
             return false;
         }
 
-        if (pixelmon.isBossPokemon()) {
+
+        if (pixelmon.isRaidPokemon()) {
             return false;
         }
 
